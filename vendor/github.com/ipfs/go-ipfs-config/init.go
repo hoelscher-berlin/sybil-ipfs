@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	difficulty = 20
+	difficulty = 18
 )
 
 type eclipseKey struct {
@@ -171,8 +171,8 @@ func identityConfig(out io.Writer, nbits int) (Identity, error) {
 		return ident, errors.New("bitsize less than 1024 is considered unsafe")
 	}
 
-	fmt.Fprintf(out, "generating %v-bit RSA keypair...", nbits)
-	sk, pk := generateEclipseKeyPairParallel("QmaSCVHThE4syxb8hDnjMgCPvjsN9gedNBD2u2UeSs1hJk")
+	fmt.Fprintf(out, "generating ED-25519 keypair with %d matching prefix ...", difficulty)
+	sk, pk := generateEclipseKeyPairParallel("QmeKLrPrse9uZFaWfZoeLbq4FMkjkSjQ3nrBdg6C8YUyYG")
 	fmt.Fprintf(out, "done\n")
 
 	// currently storing key unencrypted. in the future we need to encrypt it.
@@ -229,7 +229,7 @@ func generateEclipseKeyPair(destPrettyID string, keyChan chan eclipseKey) error 
 
 		matchPrefix := matchingPrefix(genPretty, destPrettyID)
 
-		if matchPrefix != difficulty {
+		if matchPrefix < difficulty {
 			continue
 		}
 
