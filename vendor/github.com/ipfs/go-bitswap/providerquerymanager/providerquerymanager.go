@@ -227,7 +227,7 @@ func (pqm *ProviderQueryManager) findProviderWorker() {
 				return
 			}
 			k := fpr.k
-			log.Debugf("Beginning Find Provider Request for cid: %s", k.String())
+			log.Infof("Beginning Find Provider Request for cid: %s", k.String())
 			pqm.timeoutMutex.RLock()
 			findProviderCtx, cancel := context.WithTimeout(fpr.ctx, pqm.findProviderTimeout)
 			pqm.timeoutMutex.RUnlock()
@@ -237,9 +237,10 @@ func (pqm *ProviderQueryManager) findProviderWorker() {
 				wg.Add(1)
 				go func(p peer.ID) {
 					defer wg.Done()
+					log.Infof("connecting to peer %s", p)
 					err := pqm.network.ConnectTo(findProviderCtx, p)
 					if err != nil {
-						log.Debugf("failed to connect to provider %s: %s", p, err)
+						log.Infof("failed to connect to provider %s: %s", p, err)
 						return
 					}
 					select {

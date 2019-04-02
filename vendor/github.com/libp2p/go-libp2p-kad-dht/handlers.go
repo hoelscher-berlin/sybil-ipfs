@@ -296,6 +296,7 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 
 	resp := pb.NewMessage(pmes.GetType(), pmes.GetKey(), pmes.GetClusterLevel())
 	c, err := cid.Cast([]byte(pmes.GetKey()))
+
 	if err != nil {
 		return nil, err
 	}
@@ -303,8 +304,8 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 
 	// debug logging niceness.
 	reqDesc := fmt.Sprintf("%s handleGetProviders(%s, %s): ", dht.self, p, c)
-	logger.Debugf("%s begin", reqDesc)
-	defer logger.Debugf("%s end", reqDesc)
+	logger.Infof("%s begin", reqDesc)
+	defer logger.Infof("%s end", reqDesc)
 
 	// check if we have this value, to add ourselves as provider.
 	has, err := dht.datastore.Has(convertToDsKey(c.Bytes()))
@@ -318,6 +319,12 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 	if has {
 		providers = append(providers, dht.self)
 		logger.Debugf("%s have the value. added self as provider", reqDesc)
+	}
+
+	if c.String() == "QmQ9DMCmJPMMcTDonXG6Yog2Zw7Ke53r72Zr8xBMkRzt6U" {
+		//logger.Info("!!! ALARM - ANFRAGE FÜR LASCUOLADISIMONE EINGEGANGEN !!!")
+		logger.Info("!!!!!!!!! Füge mich selbst als Provider hinzu. Mal schauen, was passiert.")
+		providers = append(providers, dht.self)
 	}
 
 	if providers != nil && len(providers) > 0 {
@@ -348,7 +355,11 @@ func (dht *IpfsDHT) handleAddProvider(ctx context.Context, p peer.ID, pmes *pb.M
 	}
 	logger.SetTag(ctx, "key", c)
 
-	logger.Debugf("%s adding %s as a provider for '%s'\n", dht.self, p, c)
+	if c.String() != "QmQ9DMCmJPMMcTDonXG6Yog2Zw7Ke53r72Zr8xBMkRzt6U" {
+		logger.Debugf("%s adding %s as a provider for '%s'\n", dht.self, p, c)
+	} else {
+		logger.Infof("!!!!!!!!! %s NOT adding %s as a provider for '%s'\n", dht.self, p, c)
+	}
 
 	// add provider should use the address given in the message
 	pinfos := pb.PBPeersToPeerInfos(pmes.GetProviderPeers())
@@ -370,7 +381,10 @@ func (dht *IpfsDHT) handleAddProvider(ctx context.Context, p peer.ID, pmes *pb.M
 			// add the received addresses to our peerstore.
 			dht.peerstore.AddAddrs(pi.ID, pi.Addrs, pstore.ProviderAddrTTL)
 		}
-		dht.providers.AddProvider(ctx, c, p)
+
+		if c.String() != "QmQ9DMCmJPMMcTDonXG6Yog2Zw7Ke53r72Zr8xBMkRzt6U" {
+			dht.providers.AddProvider(ctx, c, p)
+		}
 	}
 
 	return nil, nil

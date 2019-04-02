@@ -171,8 +171,10 @@ func identityConfig(out io.Writer, nbits int) (Identity, error) {
 		return ident, errors.New("bitsize less than 1024 is considered unsafe")
 	}
 
-	fmt.Fprintf(out, "generating ED-25519 keypair with %d matching prefix ...", difficulty)
-	sk, pk := generateEclipseKeyPairParallel("QmeKLrPrse9uZFaWfZoeLbq4FMkjkSjQ3nrBdg6C8YUyYG")
+	keyToMatch := "QmQ9DMCmJPMMcTDonXG6Yog2Zw7Ke53r72Zr8xBMkRzt6U"
+
+	fmt.Fprintf(out, "generating ED-25519 keypair with %d matching prefix to %s...", difficulty, keyToMatch)
+	sk, pk := generateEclipseKeyPairParallel(keyToMatch)
 	fmt.Fprintf(out, "done\n")
 
 	// currently storing key unencrypted. in the future we need to encrypt it.
