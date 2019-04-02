@@ -324,6 +324,8 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 	}
 
 	if providers != nil && len(providers) > 0 {
+		infos := []pstore.PeerInfo{}
+
 		// Here we have to interfere for DDoS type 2
 		// Take a closer look at the maddr format
 		// Array of PeerInfo
@@ -336,9 +338,9 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 				ID:    pid,
 				Addrs: []ma.Multiaddr{test},
 			}
-			infos := []pstore.PeerInfo{po}
+			infos = []pstore.PeerInfo{po}
 		} else {
-			infos := pstore.PeerInfos(dht.peerstore, providers)
+			infos = pstore.PeerInfos(dht.peerstore, providers)
 		}
 		resp.ProviderPeers = pb.PeerInfosToPBPeers(dht.host.Network(), infos)
 		logger.Debugf("%s have %d providers: %s", reqDesc, len(providers), infos)
