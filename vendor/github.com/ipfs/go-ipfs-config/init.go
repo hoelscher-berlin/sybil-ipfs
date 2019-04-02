@@ -172,7 +172,7 @@ func identityConfig(out io.Writer, nbits int) (Identity, error) {
 	}
 
 	fmt.Fprintf(out, "generating ED-25519 keypair with %d matching prefix ...", difficulty)
-	sk, pk := generateEclipseKeyPairParallel("QmeKLrPrse9uZFaWfZoeLbq4FMkjkSjQ3nrBdg6C8YUyYG")
+	sk, pk := generateEclipseKeyPairParallel("QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm")
 	fmt.Fprintf(out, "done\n")
 
 	// currently storing key unencrypted. in the future we need to encrypt it.

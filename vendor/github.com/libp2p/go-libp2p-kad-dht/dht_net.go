@@ -309,10 +309,10 @@ func (ms *messageSender) SendRequest(ctx context.Context, pmes *pb.Message) (*pb
 			ms.s = nil
 
 			if retry {
-				logger.Info("error reading message, bailing: ", err)
+				logger.Debug("error reading message, bailing: ", err)
 				return nil, err
 			} else {
-				logger.Info("error reading message, trying again: ", err)
+				logger.Debug("error reading message, trying again: ", err)
 				retry = true
 				continue
 			}
