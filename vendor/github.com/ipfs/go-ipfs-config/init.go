@@ -171,7 +171,7 @@ func identityConfig(out io.Writer, nbits int) (Identity, error) {
 		return ident, errors.New("bitsize less than 1024 is considered unsafe")
 	}
 
-	keyToMatch := "QmQ9DMCmJPMMcTDonXG6Yog2Zw7Ke53r72Zr8xBMkRzt6U"
+	keyToMatch := "QmNnRuUaowmVav1KyVbzuB3ABReep4v7PxQgaK1ZEisC1Q"
 
 	fmt.Fprintf(out, "generating ED-25519 keypair with %d matching prefix to %s...", difficulty, keyToMatch)
 	sk, pk := generateEclipseKeyPairParallel(keyToMatch)
@@ -231,7 +231,7 @@ func generateEclipseKeyPair(destPrettyID string, keyChan chan eclipseKey) error 
 
 		matchPrefix := matchingPrefix(genPretty, destPrettyID)
 
-		if matchPrefix < difficulty {
+		if matchPrefix != difficulty {
 			continue
 		}
 

