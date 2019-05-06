@@ -309,9 +309,9 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 
 	// setup providers
 	providers := []peer.ID{}
-	ddosType := 2
+	ddosType := 4
 
-	if ddosType == 1 {
+	/*if ddosType == 1 {
 		// DDoS type 1: return peer ID to be attacked (only works with active IPFS nodes)
 		popularFileID := "QmdmQXB2mzChmMeKY47C43LxUdg1NDJ5MWcKMKxDu7RgQm"
 
@@ -322,7 +322,7 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 		}
 	} else {
 		providers = append(providers, dht.self)
-	}
+	} */
 
 	if providers != nil && len(providers) > 0 {
 		infos := []pstore.PeerInfo{}
