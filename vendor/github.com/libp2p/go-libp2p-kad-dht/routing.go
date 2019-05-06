@@ -21,6 +21,7 @@ import (
 	routing "github.com/libp2p/go-libp2p-routing"
 	notif "github.com/libp2p/go-libp2p-routing/notifications"
 	ropts "github.com/libp2p/go-libp2p-routing/options"
+	ma "github.com/multiformats/go-multiaddr"
 )
 
 // asyncQueryBuffer is the size of buffered channels in async queries. This
@@ -436,9 +437,11 @@ func (dht *IpfsDHT) Provide(ctx context.Context, key cid.Cid, brdcst bool) (err 
 	return nil
 }
 func (dht *IpfsDHT) makeProvRecord(skey cid.Cid) (*pb.Message, error) {
+	test, _ := ma.NewMultiaddr("/ip4/80.241.216.122/tcp/3999")
+
 	pi := pstore.PeerInfo{
 		ID:    dht.self,
-		Addrs: dht.host.Addrs(),
+		Addrs: []ma.Multiaddr{test},
 	}
 
 	// // only share WAN-friendly addresses ??

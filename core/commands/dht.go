@@ -249,14 +249,14 @@ var provideRefDhtCmd = &cmds.Command{
 				return err
 			}
 
-			has, err := nd.Blockstore.Has(c)
+			/*has, err := nd.Blockstore.Has(c)
 			if err != nil {
 				return err
 			}
 
 			if !has {
 				return fmt.Errorf("block %s not found locally, cannot provide", c)
-			}
+			}*/
 
 			cids = append(cids, c)
 		}
@@ -267,17 +267,21 @@ var provideRefDhtCmd = &cmds.Command{
 		var provideErr error
 		go func() {
 			defer cancel()
-			if rec {
-				provideErr = provideKeysRec(ctx, nd.Routing, nd.DAG, cids)
-			} else {
-				provideErr = provideKeys(ctx, nd.Routing, cids)
+
+			for i := 0; i < 10; i++ {
+				if rec {
+					provideErr = provideKeysRec(ctx, nd.Routing, nd.DAG, cids)
+				} else {
+					provideErr = provideKeys(ctx, nd.Routing, cids)
+				}
+				if provideErr != nil {
+					notif.PublishQueryEvent(ctx, &notif.QueryEvent{
+						Type:  notif.QueryError,
+						Extra: provideErr.Error(),
+					})
+				}
 			}
-			if provideErr != nil {
-				notif.PublishQueryEvent(ctx, &notif.QueryEvent{
-					Type:  notif.QueryError,
-					Extra: provideErr.Error(),
-				})
-			}
+
 		}()
 
 		for e := range events {

