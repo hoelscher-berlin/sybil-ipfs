@@ -268,20 +268,17 @@ var provideRefDhtCmd = &cmds.Command{
 		go func() {
 			defer cancel()
 
-			for i := 0; i < 10; i++ {
-				if rec {
-					provideErr = provideKeysRec(ctx, nd.Routing, nd.DAG, cids)
-				} else {
-					provideErr = provideKeys(ctx, nd.Routing, cids)
-				}
-				if provideErr != nil {
-					notif.PublishQueryEvent(ctx, &notif.QueryEvent{
-						Type:  notif.QueryError,
-						Extra: provideErr.Error(),
-					})
-				}
+			if rec {
+				provideErr = provideKeysRec(ctx, nd.Routing, nd.DAG, cids)
+			} else {
+				provideErr = provideKeys(ctx, nd.Routing, cids)
 			}
-
+			if provideErr != nil {
+				notif.PublishQueryEvent(ctx, &notif.QueryEvent{
+					Type:  notif.QueryError,
+					Extra: provideErr.Error(),
+				})
+			}
 		}()
 
 		for e := range events {
